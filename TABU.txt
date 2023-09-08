@@ -1,0 +1,57 @@
+Bước lặp hiện tại: có lời giải hiện tại (xuất phát) là curSol
+1)
+bestFeasibleSol: best feasible solution trong suốt quá trình thực hiện thuật toán cho đến nay
+bestFeasibleScore: fitness(bestFeasibleSol)
+2) 
+curSol: lời giải xuất phát của bước lặp hiện tại
+curSolScore: fitness(curSol)
+3)
+curSolNeighborhood: lời giải đang xét trong neighboorhood của curSol
+curSolNeighborhoodScore: fitnesss(curSolNeighborhood)
+4)
+bestSol_Neighborhood: best sol của các lời giải trong neighborohood đang xét của curSol
+bestSol_NeighborhoodScore: fitness(bestSol_Neighborhood)
+Khởi tạo bestSol_NeighborhoodScore = INFINITY (trong bài toán có objective tìm min)
+-----------------------------------------------------------
+Giả sử: bestFeasibleScore = 1000
+Trong neighborhood hiện tại đang xét của curSol: có 
+1) solution feasible với fitness tốt nhất = 900
+2) solution INFEASIBLE với fitness tốt nhất = 800
+Thì:
+Theo Cách 1: luôn chọn solution feasbile với fitness = 900 làm lời giải cho bước lặp tiếp theo
+Theo cách 2: luộn chọn solution infeasible với fitness = 800 làm lời giải cho bước lặp tiếp theo
+----------------------------------------
+epsilon = (-1)*0.00001;
+Cách 1: nếu aspiration xảy ra, thì lời giải lưu ở bestSol_Neighborhood luôn là lời giải ở aspiration 
+
+improved = 0; //đặt improved = 1 nếu aspiration xảy ra
+if (FEASIBLE(curSolNeighborhood) && curSolNeighborhoodScore - bestFeasibleScore < epsilon) {//check điều kiện aspiration
+    bestFeasibleScore = curSolNeighborhoodScore  
+    bestFeasibleSol = curNeighborhoodSol
+    bestSol_NeiborhoodScore = curSolNeighborhoodScore;
+    bestSol_Neighborhood = curSolNeighborhood;
+    improved = 1;
+}
+else if (!improved && checkTabuCondition(curNeighborhoodSol) && curSolNeighborhoodScore - bestSol_NeighborhoodScore < epsilon) {
+    bestSol_NeiborhoodScore = curSolNeighborhoodScore;
+    bestSol_Neighborhood = curSolNeighborhood;
+}
+---------------------------------------------
+Cách 2: bestSol_Neighborhood là lời giải có fitness tốt nhất trong cả 2 điều kiện:
+1) thỏa mãn aspiration và 
+2) ko phải tabu trong neighborhood và tốt nhất trong neighborhood 
+Vậy trong cách 2: nếu sol trong neighbodhood có fitness tốt hơn fitness của bestFeasibleSol 
+nhung lai ko feasible thi vẫn cập nhật bestSol_Neighborhood
+
+if (curSolNeighborhoodScore - bestNeighborhoodScore  < epsilon) { 
+    if (FEASIBLE(curSolNeighborhood) && curSolNeighborhoodScore - bestFeasibleScore < epsilon) { //check điều kiện aspiration
+              bestSol_Neighborhood = curSolNeighborhood;
+              bestSol_NeighborhoodScore = curSolNeighborhoodScore
+              bestFeasibleScore = curSolNeighborhoodScore  
+              bestFeasibleSol = curNeighborhoodSol
+    }
+    else if (checkTabuCondition(curNeighborhoodSol)) {
+              bestSol_Neighborhood = curSolNeighborhood;
+              bestSol_NeighborhoodScore = curSolNeighborhoodScore
+    }
+}
